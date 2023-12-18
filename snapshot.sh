@@ -25,7 +25,15 @@ fi
 
 >&2 echo "Beginning snapshot: "
 >&2 echo "   Snapshot Directory: $snapshot_dir" 
->&2 echo "   Remote git repo: $repo_dir" 
+>&2 echo "   Remote git repo: $git_repo" 
+
+if [[ ! -z $XET_CAS_SERVER ]] ; then
+    >&2 echo "   Data store: $XET_CAS_SERVER"
+else
+    >&2 echo "   Data store: XetHub."
+
+fi
+
 >&2 echo "   Local working directory $working_dir"
 
 mirror_working_dir="${working_dir}/mirror"
@@ -37,9 +45,6 @@ local_repo_dir="${working_dir}/backup_repo.git"
 mkdir -p "${working_dir}"
 mkdir -p "${mirror_working_dir}"
 
-# Important -- these tell git we're in different places
-export GIT_WORK_TREE="$mirror_working_dir"
-export GIT_DIR="$local_repo_dir"
 
 # Clone the repo if we haven't already.  Otherwise, fetch and ensure we're on the correct branch. 
 if [[ ! -e "$local_repo_dir" ]] ; then 
@@ -49,21 +54,22 @@ if [[ ! -e "$local_repo_dir" ]] ; then
     git config --local core.autocrlf false # Tell git that we don't want to change clrf endings
 fi
 
+cd $local_repo_dir
+
 >&2 echo "Ensuring repository is up to date."
 
 # Now, fetch all these things.
 git xet install --local # Ensure the filter is installed in the local repo.
 git fetch origin
 current_branch=$(git rev-parse --abbrev-ref HEAD)
-if $(git branch --all | grep -q origin/$current_branch) ; then 
-    # ensure that the tip matches with the remote
-    git reset --soft origin/$current_branch
-fi
+git show HEAD:.gitattributes > "$mirror_working_dir/.gitattributes"
+
+# Important -- these tell git we're in different places
+export GIT_WORK_TREE="$mirror_working_dir"
+export GIT_DIR="$local_repo_dir"
 
 # Make sure we have all the right config files present.
 cd "$GIT_WORK_TREE"
-git checkout HEAD -- .gitattributes
-echo "$gitignore_contents" > .gitignore
 
 if [[ ! -e "$GIT_WORK_TREE/.gitattributes" ]] ; then
    echo ".gitattributes not present in repo mirror directory; is it initialized for Xet use?"
@@ -122,6 +128,7 @@ rsync -a --delete --link-dest="$snapshot_dir/" --exclude-from="$exclude_list_rel
 
 # Rename all the .git folders in the snapshot mirror so they get backed up too without submodule weirdness.
 # (This is the main reason to have a mirror of hardlinks)
+
 >&2 echo "Renaming .git folders to _git in mirror for git compatibility"
 for f in `find "$snapshot_sync_dir" -wholename '*/.git'` ; do
 	new_f="$(dirname $f)/_git" 
@@ -136,8 +143,5 @@ git add $snapshot_mirror_dir
 git commit --quiet -a -m "Snapshot $snapshot_time"
 
 >&2 echo "Syncing snapshot to remote."
-git push origin main
-
-
-
+git push --force origin $current_branch
 
