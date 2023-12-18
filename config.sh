@@ -20,7 +20,7 @@ snapshot_dir="$HOME"
 #    git_repo=git@github.com/hoytak/home_directory_backup.git
 #    local_data_store=//nas/data/
 #
-git_repo=git@github.com:hoytak/raven-backup.git
+git_repo=
 local_data_store=
 
 # The subdirectory within the repo where we're storing the snapshots.
