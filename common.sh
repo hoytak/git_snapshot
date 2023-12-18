@@ -30,7 +30,6 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-
 # Set up the environment variables if needed. 
 if [[ ! -z $local_data_store ]] ; then 
 
@@ -48,9 +47,7 @@ if [[ ! -z $local_data_store ]] ; then
 fi
 
 # Make sure we have the normalized absolute path and it's accessable.
-pushd $snapshot_dir
-snapshot_dir="${PWD}"
-popd
+snapshot_dir="$(cd "$snapshot_dir" && pwd)"
 
 working_subdir_name=".git_snapshot"
 working_dir="$snapshot_dir/$working_subdir_name"
