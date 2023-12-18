@@ -47,8 +47,19 @@ if [[ ! -z $local_data_store ]] ; then
    export XET_CAS_SERVER="local://$local_data_store"
 fi
 
-working_subdir_name=".git_snapshot/"
-working_dir="$backup_dir/$working_subdir_name"
+# Make sure we have the normalized absolute path and it's accessable.
+pushd $snapshot_dir
+snapshot_dir="${PWD}"
+popd
+
+working_subdir_name=".git_snapshot"
+working_dir="$snapshot_dir/$working_subdir_name"
+mkdir -p $working_dir
+
+
+
+
+
 
 
 
