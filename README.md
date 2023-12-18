@@ -69,7 +69,29 @@ Why not?
 
 # Viewing
 
-2. To mount a snapshot at a specific time, use 
+2. To mount a snapshot at a specific time, use the provided script [mount.sh](mount.sh).  This is a 
+convenience wrapper around git xet mount, which uses a local nfs server to mount the contents of a xet-enabled repository as a directory, with the file contents being downloaded and materialized lazily.
+
+- To list commits available: 
+
+  ```
+  ./mount.sh --list
+  ```
+
+- To mount a specific commit: 
+
+  ```
+  ./mount.sh [COMMIT]
+  ```
+ 
+  The path for this commit is displayed at the end. 
+
+- To unmount all snapshots:
+
+  ```
+  ./mount.sh --unmount 
+  ```
+
 
 
    
