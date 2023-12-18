@@ -39,28 +39,13 @@ fi
 mirror_working_dir="${working_dir}/mirror"
 snapshot_mirror_dir="$mirror_working_dir/$repo_subdir"
 snapshot_sync_dir="$snapshot_mirror_dir/$(basename $snapshot_dir)"
-local_repo_dir="${working_dir}/backup_repo.git"
 
 
 mkdir -p "${working_dir}"
 mkdir -p "${mirror_working_dir}"
 
+setup_local_git_repo
 
-# Clone the repo if we haven't already.  Otherwise, fetch and ensure we're on the correct branch. 
-if [[ ! -e "$local_repo_dir" ]] ; then 
-    >&2 echo "Cloning remote repository into $local_repo_dir"
-    git xet install
-    git clone --bare "$git_repo" "$local_repo_dir"
-    git config --local core.autocrlf false # Tell git that we don't want to change clrf endings
-fi
-
-cd $local_repo_dir
-
->&2 echo "Ensuring repository is up to date."
-
-# Now, fetch all these things.
-git xet install --local # Ensure the filter is installed in the local repo.
-git fetch origin
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 git show HEAD:.gitattributes > "$mirror_working_dir/.gitattributes"
 
@@ -144,4 +129,7 @@ git commit --quiet -a -m "Snapshot $snapshot_time"
 
 >&2 echo "Syncing snapshot to remote."
 git push --force origin $current_branch
+
+>&2 echo "Snapshot successful.  Run ./mount.sh to list snapshots."
+
 
