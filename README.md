@@ -35,7 +35,7 @@ These scripts use git with the open source [git-xet plugin](https://github.com/x
 
 ## Setup
 
-Here are three ways to configure 
+Here are three ways to set up the repository and data store:
 
 ### Setup: Local
 
@@ -76,11 +76,11 @@ This setup assumes that you have a external drive or NAS mounted at a specific f
 
 4. Edit the settings in [config.sh](config.sh) to add this information:
 
-  ```sh
-  git_repo="git@github.com:username/backup-repo.git"
-  ```
+    ```sh
+    git_repo="git@github.com:username/backup-repo.git"
+    ```
 
-  If using a local data store, also add: `local_data_store="<backup-dir>"`, otherwise leave that variable empty.
+    If using a local data store, also add: `local_data_store="<backup-dir>"`, otherwise leave that variable empty.
 
 ### Setup: XetHub
 
@@ -92,9 +92,9 @@ The XetHub service is similar to github, but all binary data is conveniently acc
 
 3. Edit the settings in [config.sh](config.sh) to add this information:
 
-  ```sh
-  git_repo="xet@xethub.com:username/backup-repo.git"
-  ``` 
+    ```sh
+    git_repo="xet@xethub.com:username/backup-repo.git"
+    ``` 
 
 ## Creating Snapshots
 
@@ -139,7 +139,7 @@ convenience wrapper around git xet mount, which uses a local nfs server to mount
 
 Why not?  
 
-But seriously, git historically has had issues handling enourmous, binary-heavy repositories that evolve over time.  However, the ecosystem is changing, and there are now several tools that make this feasible, including git-xet. 
+... But seriously, git historically has had issues handling enourmous, binary-heavy repositories that evolve over time.  However, the ecosystem is changing, and there are now several tools that make this feasible, including git-xet. 
 
 ## Why Git Xet?
 
