@@ -2,6 +2,7 @@
 .ipython/profile_default/pid
 ._.DS_Store
 .xet
+.xetconfig
 .local
 .pki
 .ssh
