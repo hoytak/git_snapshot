@@ -43,24 +43,24 @@ This setup assumes that you have a external drive or NAS mounted at a specific f
 
 1. Create the Repo.  Create a git repository on the nas drive and enable the git-xet plugin using 
      
-```sh
-repo_directory="/NAS/backup/snapshot-repo.git" # Change this to your directory
-mkdir -p "$repo_directory" && cd "$repo_directory" && git init --bare && git xet init
-``` 
+  ```sh
+  repo_directory="/NAS/backup/snapshot-repo.git" # Change this to your directory
+  mkdir -p "$repo_directory" && cd "$repo_directory" && git init --bare && git xet init
+  ``` 
 
 2. Create the Data Store.   Simply create a directory to use as the data store.
 
-```sh
-data_directory="/NAS/backup/data" # Change this to your directory
-mkdir -p "$data_directory" 
-```
+  ```sh
+  data_directory="/NAS/backup/data" # Change this to your directory
+  mkdir -p "$data_directory" 
+  ```
 
 3. Edit the settings in [config.sh](config.sh) to add these directories:
 
-```sh
-git_repo="/NAS/backup/snapshot-repo.git"
-local_data_store="/NAS/backup/data"
-```
+  ```sh
+  git_repo="/NAS/backup/snapshot-repo.git"
+  local_data_store="/NAS/backup/data"
+  ```
 
 ### Setup: Github
 
@@ -70,17 +70,17 @@ local_data_store="/NAS/backup/data"
 
 3. Configure the Data Store.
 
-  - Managed: To store your data in the fully managed [XetHub](https://about.xethub.com) service, follow the instructions in [XetHub Account Setup](#optional-xethub-account-setup).  No other configuration is needed. 
+    - Managed: To store your data in the fully managed [XetHub](https://about.xethub.com) service, follow the instructions in [XetHub Account Setup](#optional-xethub-account-setup).  No other configuration is needed. 
 
-  - Local: Follow the instructions for the data store [above](#setup-local). 
+    - Local: Follow the instructions for the data store [above](#setup-local). 
 
 4. Edit the settings in [config.sh](config.sh) to add this information:
 
-```sh
-git_repo="git@github.com:username/backup-repo.git"
-```
+  ```sh
+  git_repo="git@github.com:username/backup-repo.git"
+  ```
 
-If using a local data store, also add: `local_data_store="<backup-dir>"`, otherwise leave that variable empty.
+  If using a local data store, also add: `local_data_store="<backup-dir>"`, otherwise leave that variable empty.
 
 ### Setup: XetHub
 
@@ -92,9 +92,9 @@ The XetHub service is similar to github, but all binary data is conveniently acc
 
 3. Edit the settings in [config.sh](config.sh) to add this information:
 
-```sh
-git_repo="xet@xethub.com:username/backup-repo.git"
-``` 
+  ```sh
+  git_repo="xet@xethub.com:username/backup-repo.git"
+  ``` 
 
 ## Creating Snapshots
 
@@ -102,24 +102,24 @@ git_repo="xet@xethub.com:username/backup-repo.git"
 
 2. To create a snapshot, simply run
 
-```
-./snapshot.sh
-```
+  ```
+  ./snapshot.sh
+  ```
 
-This requires the remote repo and optionally the data store to be set in [config.sh](config.sh).
+  This requires the remote repo and optionally the data store to be set in [config.sh](config.sh).
 
 ## Browsing Snapshots
 
 To mount a snapshot at a specific time, use the provided script [mount.sh](mount.sh).  This is a 
 convenience wrapper around git xet mount, which uses a local nfs server to mount the contents of a xet-enabled repository as a directory, with the file contents being downloaded and materialized lazily.
 
-1. To list commits available: 
+- To list commits available: 
 
   ```
   ./mount.sh --list
   ```
 
-2. To mount a specific commit: 
+- To mount a specific commit: 
 
   ```
   ./mount.sh [COMMIT]
