@@ -84,9 +84,8 @@ if [[ -z $include_private_files ]] ; then
 fi
 
 >&2 echo -n "Finding and excluding files not owned by the current user (`whoami`)... "
-    find "$snapshot_dir" -mount -not \( -path "$working_dir" -prune \) '!' -user `whoami` >> "$exclude_list"
-    >&2 echo "Done." 
-fi
+find "$snapshot_dir" -mount -not \( -path "$working_dir" -prune \) '!' -user `whoami` >> "$exclude_list"
+>&2 echo "Done." 
 
 # Exclude all the folders that are on a different filesystem. 
 >&2 echo -n "Finding and excluding directories on other mounts... " 
