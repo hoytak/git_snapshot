@@ -47,7 +47,7 @@ mkdir -p "${mirror_working_dir}"
 setup_local_git_repo
 
 current_branch=$(git rev-parse --abbrev-ref HEAD)
-git show HEAD:.gitattributes > "$mirror_working_dir/.gitattributes"
+git show HEAD:.gitattributes > "$mirror_working_dir/.gitattributes" 
 
 # Important -- these tell git we're in different places
 export GIT_WORK_TREE="$mirror_working_dir"
@@ -128,7 +128,7 @@ for f in `find "$snapshot_sync_dir" -wholename '*/.git'` ; do
 done
 
 >&2 echo "Adding the snapshot to git."
-git add $snapshot_mirror_dir
+git add $snapshot_sync_dir
 git commit --quiet -a -m "Snapshot $snapshot_time"
 
 >&2 echo "Syncing snapshot to remote."
