@@ -96,7 +96,8 @@ fi
 # Make sure we have the normalized absolute path and it's accessable.
 snapshot_dir="$(cd "$snapshot_dir" && pwd)"
 
-working_subdir_name=".git_snapshot"
+# Put in the .noindex extension so this folder doesn't get indexed in spotlight
+working_subdir_name=".git_snapshot.noindex"
 working_dir="$snapshot_dir/$working_subdir_name"
 mkdir -p $working_dir
 
