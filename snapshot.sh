@@ -46,8 +46,8 @@ mkdir -p "${mirror_working_dir}"
 
 setup_local_git_repo
 
-current_branch=$(git rev-parse --abbrev-ref HEAD)
-git show HEAD:.gitattributes > "$mirror_working_dir/.gitattributes" 
+current_branch=$(git rev-parse --abbrev-ref HEAD) 
+git show HEAD:.gitattributes > "$mirror_working_dir/.gitattributes"
 
 # Important -- these tell git we're in different places
 export GIT_WORK_TREE="$mirror_working_dir"
@@ -79,17 +79,20 @@ echo "$working_dir" > "$exclude_list"
 # Unless requested, exclude all files that do not have group read permissions.
 if [[ -z $include_private_files ]] ; then
     >&2 echo -n "Finding and excluding files without group read permissions... "
-    find "$snapshot_dir" -mount -not \( -path "$working_dir" -prune \) '!' -perm -g=r >> "$exclude_list"
+    find "$snapshot_dir" -mount -not \( -path "$working_dir" -prune \) '!' -perm -g=r 2>&1 | grep -v "Operation not permitted"  >> "$exclude_list" || 
     >&2 echo "Done." 
 fi
 
 >&2 echo -n "Finding and excluding files not owned by the current user (`whoami`)... "
-find "$snapshot_dir" -mount -not \( -path "$working_dir" -prune \) '!' -user `whoami` >> "$exclude_list"
+find "$snapshot_dir" -mount -not \( -path "$working_dir" -prune \) '!' -user `whoami` 2>&1 | sed -E 's|find: (.*): Operation not permitted|\1|' >> "$exclude_list" ||
 >&2 echo "Done." 
 
 # Exclude all the folders that are on a different filesystem. 
->&2 echo -n "Finding and excluding directories on other mounts... " 
-df -P | awk '{print $6}' | tail -n +2 | grep "$snapshot_dir/" >> "$exclude_list" && echo " Done." || echo " None found." 
+>&2 echo -n "Finding and excluding directories that point to other mounts... " 
+other_drive_list=$(df -P | awk '{print $6}' | tail -n +2 | grep "$snapshot_dir/")
+>&2 echo "Excluding:"
+>&2 echo "$other_drive_list"
+echo "$other_drive_list" >> "$exclude_list" && echo " Done." || echo " None found." 
 
 # Exclude all the files in the manual exclude list
 if [[ -e "$SCRIPT_DIR/exclude_list.txt" ]] ; then 
@@ -113,7 +116,7 @@ cat "$exclude_list" | sed "s|^$snapshot_dir/||" > "$exclude_list_rel"
 
 # Create a mirrored copy; this should only use hardlinks and take up very minimal space. 
 >&2 echo "Creating snapshot in $snapshot_mirror_dir/ using hardlinks."
-rsync -a --delete --link-dest="$snapshot_dir/" --exclude-from="$exclude_list_rel" --exclude "*$working_subdir_name/*" "$snapshot_dir"/ "$snapshot_sync_dir/"
+rsync -a --delete --open-noatime --link-dest="$snapshot_dir/" --ignore-errors --exclude-from="$exclude_list_rel" --exclude "*$working_subdir_name/*" "$snapshot_dir"/ "$snapshot_sync_dir/"
 
 # Rename all the .git folders in the snapshot mirror so they get backed up too without submodule weirdness.
 # (This is the main reason to have a mirror of hardlinks)
