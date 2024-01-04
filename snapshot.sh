@@ -51,9 +51,10 @@ current_branch=$(git rev-parse --abbrev-ref HEAD)
 # Important -- these tell git we're in different places
 export GIT_WORK_TREE="$mirror_working_dir"
 export GIT_DIR="$local_repo_dir"
+cd $GIT_WORK_TREE
 
 # Make sure the .gitattributes folder is in the working tree.  
-git checkout -- .gitattributes 
+git checkout HEAD -- .gitattributes 
 
 # Make sure we have all the right config files present.
 cd "$GIT_WORK_TREE"
@@ -80,17 +81,17 @@ echo "$working_dir" > "$exclude_list"
 
 # Unless requested, exclude all files that do not have group read permissions.
 if [[ -z $include_private_files ]] ; then
-    >&2 echo -n "Finding and excluding files without group read permissions... "
+    >&2 echo "Finding and excluding files without group read permissions... "
     find "$snapshot_dir" -mount -not \( -path "$working_dir" -prune \) '!' -perm -g=r 2>&1 | grep -v "Operation not permitted"  >> "$exclude_list" || 
     >&2 echo "Done." 
 fi
 
->&2 echo -n "Finding and excluding files not owned by the current user (`whoami`)... "
+>&2 echo "Finding and excluding files not owned by the current user (`whoami`)... "
 find "$snapshot_dir" -mount -not \( -path "$working_dir" -prune \) '!' -user `whoami` 2>&1 | sed -E 's|find: (.*): Operation not permitted|\1|' >> "$exclude_list" ||
 >&2 echo "Done." 
 
 # Exclude all the folders that are on a different filesystem. 
->&2 echo -n "Finding and excluding directories that point to other mounts... " 
+>&2 echo "Finding and excluding directories that point to other mounts... " 
 other_drive_list=$(df -P | awk '{print $6}' | tail -n +2 | grep "$snapshot_dir/")
 >&2 echo "Excluding:"
 >&2 echo "$other_drive_list"
@@ -133,7 +134,8 @@ for f in `find "$snapshot_sync_dir" -wholename '*/.git'` ; do
 done
 
 >&2 echo "Adding the snapshot to git."
-git add $snapshot_sync_dir
+git add "$mirror_working_dir/.gitattributes"
+git add "$snapshot_sync_dir"
 git commit --quiet -a -m "Snapshot $snapshot_time"
 
 >&2 echo "Syncing snapshot to remote."
