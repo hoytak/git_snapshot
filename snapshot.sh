@@ -52,14 +52,8 @@ current_branch=$(git rev-parse --abbrev-ref HEAD)
 export GIT_WORK_TREE="$mirror_working_dir"
 export GIT_DIR="$local_repo_dir"
 
-# This shouldn't usually be needed.  Just hit a few times where the repo at the end got badly configured.
-set_gitattributes() { 
-    cd $mirror_working_dir
-    git xet init -e --write-gitattributes
-}
-
-# Make sure the .gitattributes folder is in the working tree.  If not, we should put it there. 
-git show HEAD:.gitattributes > "$mirror_working_dir/.gitattributes" || set_gitattributes
+# Make sure the .gitattributes folder is in the working tree.  
+git checkout -- .gitattributes 
 
 # Make sure we have all the right config files present.
 cd "$GIT_WORK_TREE"
