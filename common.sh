@@ -110,6 +110,7 @@ setup_local_git_repo() {
         >&2 echo "Cloning remote repository into $local_repo_dir"
         git xet install
         git clone --bare "$git_repo" "$local_repo_dir"
+        cd "$local_repo_dir"
         git config --local core.autocrlf false # Tell git that we don't want to change clrf endings
     fi
 
